@@ -1,15 +1,17 @@
 // src/inngest/functions.ts
 import { inngest } from "./client"
+import { createAgent, grok, gemini } from "@inngest/agent-kit"
 
 export const processTask = inngest.createFunction(
   { id: "process-task", triggers: { event: "app/task.created" } },
   async ({ event, step }) => {
-    const result = await step.run("handle-task", async () => {
-      return { processed: true, id: event.data.id }
+    const summarizer = createAgent({
+      name: "summarizer",
+      system:
+        "You are a helpful assistant that summarizes text. You summarize in 2 words.",
+      model: gemini({ model: "gemini-2.5-flash" }),
     })
 
-    await step.sleep("pause", "1s")
-
-    return { message: `Task ${event.data.id} complete`, result }
+    return { message: `Hello ${event.data.value}` }
   }
 )
