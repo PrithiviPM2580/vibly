@@ -37,6 +37,7 @@
     "zod": "^4.4.1"
   },
   "devDependencies": {
+    "@e2b/cli": "^2.10.1",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/node": "^25.5.0",
