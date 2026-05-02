@@ -47,10 +47,10 @@ export const codeAgentFunction = inngest.createFunction(
     })
 
     const codeAgent = createAgent<AgentState>({
-      name: "code-agent",
+      name: "code-agent-main",
       description: "An expert coding agent",
       system: PROMPT,
-      model: grok({ model: "grok-2" }),
+      model: gemini({ model: "gemini-2.5-flash" }),
       tools: [
         createTool({
           name: "terminal",
@@ -108,6 +108,19 @@ export const codeAgentFunction = inngest.createFunction(
                   const sandbox = await getSandbox(sandboxId)
 
                   for (const file of files) {
+                    // Defensive validation: ensure file shape is correct
+                    if (
+                      !file ||
+                      typeof file.path !== "string" ||
+                      typeof file.content !== "string"
+                    ) {
+                      console.warn(
+                        "Skipping malformed file entry from agent:",
+                        file
+                      )
+                      continue
+                    }
+
                     await sandbox.files.write(file.path, file.content)
                     updatedFiles[file.path] = file.content
                   }
