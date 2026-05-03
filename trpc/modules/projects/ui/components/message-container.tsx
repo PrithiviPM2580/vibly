@@ -4,37 +4,43 @@ import { useEffect, useRef } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { useTRPC } from "@/trpc/client"
+import { Fragment } from "@/generated/prisma/client"
 
 import MessageCard from "./message-card"
 import MessageForm from "./message-form"
+import { MessageLoading } from "./message-loading"
 
 interface Props {
   projectId: string
+  activeFragment: Fragment | null
+  setActiveFragment: (fragment: Fragment | null) => void
 }
 
-export default function MessageContainer({ projectId }: Props) {
+export default function MessageContainer({
+  projectId,
+  activeFragment,
+  setActiveFragment,
+}: Props) {
   const trpc = useTRPC()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const { data: messages } = useSuspenseQuery(
-    trpc.messages.getMany.queryOptions({
-      projectId: projectId,
-    })
-  )
-
-  useEffect(() => {
-    const lastAssistantMessage = messages.findLast(
-      (message) => message.role === "ASSISTANT"
+    trpc.messages.getMany.queryOptions(
+      {
+        projectId: projectId,
+      },
+      {
+        refetchInterval: 5000,
+      }
     )
-
-    if (lastAssistantMessage) {
-      // TODO SET ACTIVE FRAGMENT
-    }
-  }, [messages])
+  )
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView()
   }, [messages.length])
+
+  const lastMessage = messages[messages.length - 1]
+  const isLastMessageUser = lastMessage?.role === "USER"
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -47,16 +53,17 @@ export default function MessageContainer({ projectId }: Props) {
               role={message.role}
               fragment={message.fragment}
               createdAt={message.createdAt}
-              isActiveFragment={false}
-              onFragmentClick={() => {}}
+              isActiveFragment={activeFragment?.id === message.fragment?.id}
+              onFragmentClick={() => setActiveFragment(message.fragment)}
               type={message.type}
             />
           ))}
+          {isLastMessageUser && <MessageLoading />}
           <div ref={bottomRef} />
         </div>
       </div>
       <div className="relative p-3 pt-1">
-        <div className="pointer-events-none absolute -top-6 right-0 left-0 h-6 bg-gradient-to-b from-transparent to-background" />
+        <div className="pointer-events-none absolute -top-6 right-0 left-0 h-6 bg-linear-to-b from-transparent to-background" />
         <MessageForm projectId={projectId} />
       </div>
     </div>
