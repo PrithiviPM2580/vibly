@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -31,8 +31,15 @@ export default function RootLayout({
         )}
       >
         <body>
-          <ThemeProvider>{children}</ThemeProvider>
-          <Toaster richColors position="bottom-right" />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </ThemeProvider>
         </body>
       </html>
     </TRPCReactProvider>
