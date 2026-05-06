@@ -4,6 +4,7 @@ import { z } from "zod"
 import { toast } from "sonner"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
+import { useClerk } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import TextareaAutosize from "react-textarea-autosize"
 import { ArrowUpIcon, Loader2Icon } from "lucide-react"
@@ -24,6 +25,7 @@ export default function ProjectForm() {
   const router = useRouter()
   const trpc = useTRPC()
   const queryClient = useQueryClient()
+  const clerk = useClerk()
 
   const createProject = useMutation(
     trpc.projects.create.mutationOptions({
@@ -33,8 +35,11 @@ export default function ProjectForm() {
         // TODO: Invalidate usage status
       },
       onError: (error) => {
-        // TODO: Redirect to pricing page if specific error
         toast.error(error.message)
+
+        if (error.data?.code === "UNAUTHORIZED") {
+          clerk.openSignIn()
+        }
       },
     })
   )
