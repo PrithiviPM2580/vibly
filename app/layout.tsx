@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { TRPCReactProvider } from "@/trpc/client"
 import { Toaster } from "@/components/ui/sonner"
+import { ClerkProvider } from "@clerk/nextjs"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -19,29 +20,31 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <TRPCReactProvider>
-      <html
-        lang="en"
-        suppressHydrationWarning
-        className={cn(
-          "antialiased",
-          fontMono.variable,
-          "font-sans",
-          inter.variable
-        )}
-      >
-        <body>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster richColors position="bottom-right" />
-          </ThemeProvider>
-        </body>
-      </html>
-    </TRPCReactProvider>
+    <ClerkProvider>
+      <TRPCReactProvider>
+        <html
+          lang="en"
+          suppressHydrationWarning
+          className={cn(
+            "antialiased",
+            fontMono.variable,
+            "font-sans",
+            inter.variable
+          )}
+        >
+          <body>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster richColors position="bottom-right" />
+            </ThemeProvider>
+          </body>
+        </html>
+      </TRPCReactProvider>
+    </ClerkProvider>
   )
 }

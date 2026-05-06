@@ -1,3 +1,5 @@
+import { Navbar } from "@/trpc/modules/home/ui/components/navbar"
+
 interface Props {
   children: React.ReactNode
 }
@@ -5,7 +7,8 @@ interface Props {
 function Layout({ children }: Props) {
   return (
     <main className="flex max-h-screen min-h-screen flex-col">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#dadde2_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)]" />
+      <Navbar />
+      <div className="bg-size:[16px_16px] absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#dadde2_1px,transparent_1px)] dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)]" />
       <div className="flex flex-1 flex-col px-4 pb-4">{children}</div>
     </main>
   )
